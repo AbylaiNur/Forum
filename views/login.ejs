@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('./partials/head') %>
+    <title>Home</title>
+</head>
+<body>
+<%- include('./partials/nav') %>
+<section class="bg-secondary">
+    <div class="container vh-100">
+        <div class="row h-100 justify-content-center">
+            <div class="col-4 mx-auto my-auto bg-white p-3 rounded">
+                <h1 class="text-center mb-3">Log in</h1>
+                <form action="/login" method="post">
+                    <label for="username" class="form-label">Username</label>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" id="username" name="username" required>
+                    </div>
+
+                    <label for="password" class="form-label">Password</label>
+                    <div class="input-group mb-3">
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary mb-3">Log In</button>
+                </form>
+                <a class="btn btn-danger" href="/signup">Sign Up</a>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+
+
+</html>

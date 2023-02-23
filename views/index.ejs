@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('./partials/head') %>
+    <title>Home</title>
+</head>
+<body>
+<%- include('./partials/nav') %>
+
+<div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-inner">
+        <% const movie1 = movies[Math.floor(Math.random() * movies.length)] %>
+        <div class="carousel-item active">
+            <img src="https://image.tmdb.org/t/p/w500/<%= movie1.poster_path %>" class="d-block w-100" alt="...">
+        </div>
+        <% const movie2 = movies[Math.floor(Math.random() * movies.length)] %>
+        <div class="carousel-item">
+            <img src="https://image.tmdb.org/t/p/w500/<%= movie2.poster_path %>" class="d-block w-100" alt="...">
+        </div>
+        <% const movie3 = movies[Math.floor(Math.random() * movies.length)] %>
+        <div class="carousel-item">
+            <img src="..." class="d-block w-100" alt="...">
+        </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
+</div>
+
+<div class="container">
+    <h1 class="my-5">Movies</h1>
+    <div class="row">
+        <% movies.forEach(movie => { %>
+            <div class="col-2 mb-4">
+                <div class="card text-bg-dark h-100 border-0">
+                    <img class="card-img-top" src="https://image.tmdb.org/t/p/w500/<%= movie.poster_path %>" alt="movie">
+                    <div class="card-body">
+                        <%= movie.title %>
+                        <span class="badge rounded-pill text-bg-warning"><%= movie.vote / movie.vote_count %></span>
+                    </div>
+                    <a class="stretched-link" href="title/<%= movie.id%>"></a>
+                </div>
+            </div>
+        <% }); %>
+    </div>
+</div>
+
+</body>
+
+
+</html>

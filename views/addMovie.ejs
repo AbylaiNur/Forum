@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('./partials/head') %>
+    <title>Home</title>
+</head>
+<body>
+<%- include('./partials/nav') %>
+<section class="bg-secondary">
+    <div class="container">
+        <div class="row h-100 justify-content-center py-5">
+            <div class="col-4 mx-auto my-auto bg-white p-3 rounded">
+                <h1 class="text-center mb-3">Add movie</h1>
+                <p class="text-center text-secondary">Hello! More movies?</p>
+
+                <form action="/adminPanel/addMovie" enctype="multipart/form-data" method="post">
+                    <label for="title" class="form-label">Title</label>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" id="title" name="title" required>
+                    </div>
+
+                    <label for="release_date" class="form-label">Release date</label>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" id="release_date" name="release_date" required>
+                    </div>
+
+                    <label for="release_date" class="form-label">Genres</label>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" id="genres" name="genres" required>
+                    </div>
+
+                    <label for="country" class="form-label">Country</label>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" id="country" name="country" required>
+                    </div>
+
+                    <label for="original_language" class="form-label">Language</label>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" id="original_language" name="original_language" required>
+                    </div>
+
+                    <label for="status" class="form-label">Status</label>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" id="status" name="status" required>
+                    </div>
+
+                    <label for="runtime" class="form-label">Runtime</label>
+                    <div class="input-group mb-3">
+                        <input type="number" class="form-control" id="runtime" name="runtime" required>
+                    </div>
+
+                    <label for="runtime" class="form-label">Revenue</label>
+                    <div class="input-group mb-3">
+                        <input type="number" class="form-control" id="revenue" name="revenue" required>
+                    </div>
+
+                    <label for="runtime" class="form-label">Budget</label>
+                    <div class="input-group mb-3">
+                        <input type="number" class="form-control" id="budget" name="budget" required>
+                    </div>
+
+                    <label for="runtime" class="form-label">Vote count</label>
+                    <div class="input-group mb-3">
+                        <input type="number" class="form-control" id="vote_count" name="vote_count" required>
+                    </div>
+
+                    <label for="runtime" class="form-label">Vote average</label>
+                    <div class="input-group mb-3">
+                        <input type="number" class="form-control" id="vote_average" name="vote_average" required>
+                    </div>
+
+
+                    <label for="overview" class="form-label">Overview</label>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" id="overview" name="overview" required>
+                    </div>
+
+                    <label for="overview" class="form-label">Tagline</label>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" id="tagline" name="tagline" required>
+                    </div>
+
+                    <label for="poster_path" class="form-label">Image</label>
+                    <div class="input-group mb-3">
+                        <input type="file" class="form-control" id="image" name="image"  required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+</body>
+</html>

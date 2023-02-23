@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('./partials/head') %>
+    <title>Home</title>
+</head>
+<body>
+<%- include('./partials/nav') %>
+
+<div class="container vh-100">
+    <h1>Admin Panel</h1>
+    <a class="btn btn-danger ms-auto" href="/logout">Log Out</a>
+    <a class="btn btn-primary" href="/adminPanel/addUser">Add User</a>
+    <h2 class="mb-3">Users list</h2>
+    <table class="table table-striped" id="myTable2">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Username</th>
+            <th onclick="sortTable(0)" scope="col">Name</th>
+            <th onclick="sortTable(1)" scope="col">Country</th>
+            <th scope="col">Role</th>
+            <th scope="col">City</th>
+            <th scope="col">Email</th>
+            <th scope="col">Password</th>
+            <th scope="col">Last visit</th>
+            <th scope="col">Action</th>
+        </tr>
+        </thead>
+        <tbody class="table-group-divider">
+        <% let num = 1 %>
+        <% users.forEach(user => { %>
+        <tr>
+            <th scope="col"><%= num++ %></th>
+            <td ><%= user.username %></td>
+            <td ><%= user.name %></td>
+            <td ><%= user.country %></td>
+            <td ><%= user.role %></td>
+            <td ><%= user.city %></td>
+            <td ><%= user.email %></td>
+            <td ><%= user.password %></td>
+            <td ><%= Math.round((new Date().getTime() - Number(user.time)) / 1000 / 3600) %> hours ago</td>
+            <td >
+                <a class="btn btn-success me-2" href="/profile/<%= user._id %>" role="button">View</a>
+                <a class="btn btn-primary me-2" href="/adminPanel/editUser/<%= user._id %>" role="button">Edit</a>
+                <a class="btn btn-danger me-2 delete-profile" data-doc="<%= user._id %>" role="button">Remove</a>
+            </td>
+        </tr>
+        <% }); %>
+        </tbody>
+    </table>
+</div>
+
+<div class="container">
+    <h2 class="mb-3">Movies list</h2>    <a class="btn btn-primary" href="/adminPanel/addMovie">Add Movie</a>
+
+    <table class="table table-striped" id="myTable2">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Title</th>
+            <th scope="col">Action</th>
+        </tr>
+        </thead>
+        <tbody class="table-group-divider">
+        <% let numm = 1 %>
+        <% movies.forEach(movie => { %>
+            <tr>
+                <th scope="col"><%= numm++ %></th>
+                <td ><%= movie.title %></td>
+                <td >
+                    <a class="btn btn-success me-2" href="/title/<%= movie._id %>" role="button">View</a>
+                    <a class="btn btn-primary me-2" href="/adminPanel/editMovie/<%= movie._id %>" role="button">Edit</a>
+                    <a class="btn btn-danger me-2 delete-profile" href="/adminPanel/deleteMovie/<%= movie._id %>" role="button">Remove</a>
+                </td>
+            </tr>
+        <% }); %>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    // to hard to explain
+    // sends delete request
+    const deleteButtons = document.querySelectorAll('a.delete-profile');
+    deleteButtons.forEach(deleteButton => {
+        deleteButton.addEventListener('click', (e) => {
+            console.log('here');
+            const endpoint = `/profile/${e.target.getAttribute('data-doc')}`;
+            fetch(endpoint, {method : 'delete' })
+                .then((res) => res.json())
+                .then((data) => window.location.href = data.redirect)
+                .catch((err) => console.log(err));
+        })
+    });
+
+    const deleteButtonsMovies = document.querySelectorAll('a.delete-movie');
+    deleteButtonsMovies.forEach(deleteButton => {
+        deleteButton.addEventListener('click', (e) => {
+            console.log('here');
+            const endpoint = `/profile/${e.target.getAttribute('data-doc')}`;
+            fetch(endpoint, {method : 'delete' })
+                .then((res) => res.json())
+                .then((data) => window.location.href = data.redirect)
+                .catch((err) => console.log(err));
+        })
+    });
+
+
+    // was made by a smart guy
+    function sortTable(n) {
+        var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+        table = document.getElementById("myTable2");
+        switching = true;
+        dir = "asc";
+        while (switching) {
+            switching = false;
+            rows = table.rows;
+            for (i = 1; i < (rows.length - 1); i++) {
+                shouldSwitch = false;
+                x = rows[i].getElementsByTagName("TD")[n];
+                y = rows[i + 1].getElementsByTagName("TD")[n];
+                console.log(x, y);
+                if (dir == "asc") {
+                    if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                        shouldSwitch = true;
+                        break;
+                    }
+                } else if (dir == "desc") {
+                    if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                        shouldSwitch = true;
+                        break;
+                    }
+                }
+            }
+            if (shouldSwitch) {
+                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                switching = true;
+                switchcount ++;
+            } else {
+                if (switchcount == 0 && dir == "asc") {
+                    dir = "desc";
+                    switching = true;
+                }
+            }
+        }
+    }
+</script>
+</body>
+
+</html>

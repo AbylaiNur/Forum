@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('./partials/head') %>
+    <title>Threads</title>
+</head>
+<body>
+
+<%- include('./partials/nav') %>
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-2">
+            <h1 class="mb-3 mt-2">
+                /<%= thread.name %>
+            </h1>
+            <div class="mb-3"><%= thread.joins_count %> Members</div>
+            <% if (user) { %>
+                <% if (thread.is_joined === false) { %>
+                    <form action="/threads/join/<%= thread._id %>" method="post">
+                        <button style="z-index: 2; position: relative;" type="submit" class="btn btn-primary mb-4">
+                            Join
+                        </button>
+                    </form>
+                <% } else { %>
+                    <form action="/threads/leave/<%= thread._id %>" method="post">
+                        <button style="z-index: 2; position: relative;" type="submit" class="btn btn-danger mb-4">
+                            Leave
+                        </button>
+                    </form>
+                <% } %>
+            <% } else { %>
+                <a style="z-index: 2; position: relative;" href="/login" class="btn btn-primary mb-4">Join</a>
+            <% } %>
+        </div>
+        <div class="col-10">
+            <p class="my-4"><%= thread.description %></p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-1">
+            <% if (!post.isUpvoted) { %>
+                <form action="/post/upvote/<%= post._id %>" method="post">
+                    <button type="submit" class="btn btn-outline-danger btn-sm">
+                        <i class="bi bi-arrow-up"></i>
+                    </button>
+                </form>
+            <% } else { %>
+                <form action="/post/remove/upvote/<%= post._id %>" method="post">
+                    <button type="submit" class="btn btn-danger btn-sm">
+                        <i class="bi bi-arrow-up"></i>
+                    </button>
+                </form>
+            <% } %>
+            <h5 class="ms-2">
+                <%= post.voteSum %>
+            </h5>
+            <% if (!post.isDownvoted) { %>
+                <form action="/post/downvote/<%= post._id %>" method="post">
+                    <button type="submit" class="btn btn-outline-danger btn-sm">
+                        <i class="bi bi-arrow-down"></i>
+                    </button>
+                </form>
+            <% } else { %>
+                <form action="/post/remove/downvote/<%= post._id %>" method="post">
+                    <button type="submit" class="btn btn-danger btn-sm">
+                        <i class="bi bi-arrow-down"></i>
+                    </button>
+                </form>
+            <% } %>
+        </div>
+        <div class="col-11">
+            <p class="text-secondary">Posted by
+                u/<em><%= post.author %></em> <%= timeAgo(new Date() - post.createdAt) %></p>
+            <h3><%= post.header %></h3>
+            <p>
+                <%= post.text %>
+            </p>
+        </div>
+    </div>
+</div>
+
+
+<!-- comments-->
+
+
+<div class="container mt-20 mb-20">
+    <!-- form for comments-->
+    <div class="container my-5 pt-5 border-top">
+        <form action="/post/comment/<%= post._id %>" method="post">
+            <div class="form-floating">
+                <textarea class="form-control text-secondary" placeholder="Leave a comment here" id="floatingTextarea"
+                          name="body"></textarea>
+                <label for="floatingTextarea">Leave your comment here</label>
+            </div>
+            <button class="btn btn-primary mt-3">Comment</button>
+        </form>
+    </div>
+    <!--bunch of comments -->
+    <!-- I like and hate this part so much -Abylai -->
+    <% function find(item) { %>
+        <% for (let i = 0; i < comments.length; i++) { %>
+            <% if (item === comments[i]._id.toString()) { %>
+                <% return comments[i]; %>
+            <% } %>
+        <% } %>
+    <% } %>
+    <!-- Recursion function to print replies. To do that used trees and -id-s for references as nodes -->
+    <% function printReplies(comment) { %>
+        <div class="border-start border-dark ps-4 my-3">
+            <% comment.replies.forEach((reply_id) => { %>
+                <% const comment = find(reply_id.toString()) %>
+                <div class="d-inline fw-bold"><%= comment.username %></div>
+                <div class="d-inline text-secondary "><%= timeAgo(new Date() - comment.createdAt) %></div>
+                <p class="mb-0 text-break"><%= comment.body %></p>
+
+                <button class="btn btn btn-outline-secondary mb-1 border-0 p-0 px-1" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#collapse<%= comment._id.toString() %>"
+                        aria-expanded="false">
+                    <i class="bi bi-reply"></i>
+                </button>
+
+
+                <!-- collapse for reply -->
+                <div class="collapse my-2 " id="collapse<%= comment._id.toString() %>">
+                    <div class="card card-body border-primary">
+                        <div id="comment<%= comment._id %>">
+                            <form action="/post/<%= post._id %>/reply/<%= comment._id %>" method="post">
+                                <div class="form-floating">
+                                    <textarea class="form-control" placeholder="Leave a comment here"
+                                              id="floatingTextarea" name="reply"></textarea>
+                                    <label for="floatingTextarea">Add a reply</label>
+                                </div>
+                                <button class="btn btn-primary mt-3">Reply</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <% printReplies(comment) %>
+            <% }) %>
+        </div>
+    <% } %>
+
+    <% function timeAgo (time_difference) { %>
+        <% const secs = Math.floor(time_difference / 1000); %>
+        <% const mins = Math.floor(secs / 60); %>
+        <% const hours = Math.floor(mins / 60); %>
+        <% const days = Math.floor(hours / 24); %>
+        <% const weeks = Math.floor(days / 7); %>
+        <% const months = Math.floor(days / 30); %>
+        <% const years = Math.floor(days / 365); %>
+
+        <% if (mins === 0) { %>
+            <% return secs + " sec. ago"; %>
+        <% } else if (hours === 0) { %>
+            <% return mins + " min. ago"; %>
+        <% } else if (days === 0) { %>
+            <% return hours + " h. ago"; %>
+        <% } else if (weeks === 0) { %>
+            <% return days + " d. ago"; %>
+        <% } else if (months === 0) { %>
+            <% return weeks + " w. ago"; %>
+        <% } else if (years === 0) { %>
+            <% return months + " mon. ago"; %>
+        <% } else { %>
+            <% return years + " y. ago" %>
+        <% } %>
+    <% } %>
+
+    <% comments.forEach(comment => { %>
+        <% if (comment.level === 0) { %>
+
+            <div class="border-start border-dark ps-4 my-4">
+                <div class="d-inline fw-bold"><%= comment.username %></div>
+                <div class="d-inline text-secondary"><%= timeAgo(new Date() - comment.createdAt) %></div>
+                <p class="mb-0 text-break"><%= comment.body %></p>
+
+                <button class="btn btn btn-outline-secondary mb-1 border-0 p-0 px-1" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#collapse<%= comment._id.toString() %>"
+                        aria-expanded="false">
+                    <i class="bi bi-reply"></i>
+                </button>
+
+                <!-- collapse for reply -->
+                <div class="collapse my-2 " id="collapse<%= comment._id.toString() %>">
+                    <div class="card card-body border-primary">
+                        <div id="comment<%= comment._id %>">
+                            <form action="/post/<%= post._id %>/reply/<%= comment._id %>" method="post">
+                                <div class="form-floating">
+                                    <textarea class="form-control" placeholder="Leave a comment here"
+                                              id="floatingTextarea" name="reply"></textarea>
+                                    <label for="floatingTextarea">Add a reply</label>
+                                </div>
+                                <button class="btn btn-primary mt-3">Reply</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <% printReplies(comment) %>
+
+            </div>
+
+
+        <% } %>
+    <% }) %>
+</div>
+
+
+</body>

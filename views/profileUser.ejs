@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('./partials/head') %>
+    <title>Home</title>
+</head>
+<body>
+<%- include('./partials/nav') %>
+
+
+<div class="container">
+    <div class="main-body">
+        <div class="row gutters-sm">
+            <div class="col-md-4 my-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex flex-column align-items-center text-center">
+                            <img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="Admin" class="rounded-circle" width="150">
+                            <div class="mt-3">
+                                <h4>
+                                    <%= user.username %>
+                                </h4>
+                                <p class="text-secondary mb-1">
+                                    <%= user.role %> (Role)
+                                </p>
+                                <p class="text-muted font-size-sm">
+                                    <%= user.city %>
+                                </p>
+                                <a class="btn btn-primary" href="/profile/edit">Edit</a>
+                                <a class="btn btn-danger" href="/logout">Log Out</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-md-8">
+                <div class="card my-3">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <h6 class="mb-0">Username</h6>
+                            </div>
+                            <div class="col-sm-9 text-secondary">
+                                <%= user.username %>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <h6 class="mb-0">Email</h6>
+                            </div>
+                            <div class="col-sm-9 text-secondary">
+                                <%= user.email %>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <h6 class="mb-0">City</h6>
+                            </div>
+                            <div class="col-sm-9 text-secondary">
+                                <%= user.city %>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <h6 class="mb-0">Country</h6>
+                            </div>
+                            <div class="col-sm-9 text-secondary">
+                                <%= user.country %>
+                            </div>
+                        </div>
+                        <hr>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h1 class="mb-4 mt-2">
+            Threads
+        </h1>
+
+        <% threads.forEach(thread => { %>
+            <div class="card mb-3" style="z-index: 2; position: relative;">
+                <div class="card-body">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-1">
+                                <% if (user) { %>
+                                    <% if (thread.is_joined === false) { %>
+                                        <form action="/threads/join/<%= thread._id %>" method="post">
+                                            <button style="z-index: 2; position: relative;" type="submit"
+                                                    class="btn btn-primary btn-sm">Join
+                                            </button>
+                                        </form>
+                                    <% } else { %>
+                                        <form action="/threads/leave/<%= thread._id %>" method="post">
+                                            <button style="z-index: 2; position: relative;" type="submit"
+                                                    class="btn btn-danger btn-sm">Leave
+                                            </button>
+                                        </form>
+                                    <% } %>
+                                <% } else { %>
+                                    <a style="z-index: 2; position: relative;" href="/login" class="btn btn-primary btn-sm">Join</a>
+                                <% } %>
+                            </div>
+                            <div class="col-1 text-end">
+                                <%= thread.joins_count %> Members
+                            </div>
+                            <div class="col-2">
+                                <a class="stretched-link" href="/threads/<%= thread._id %>">/<%= thread.name %></a>
+                            </div>
+                            <div class="col-8">
+                                <div><%= thread.description %></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <% }) %>
+        <h2 class="my-4">Posts</h2>
+        <% posts.forEach(post => { %>
+            <div>
+                <div class="card mb-3" style="z-index: 2; position: relative;">
+                    <div class="card-body">
+                        <a class="stretched-link" href="/post/<%= post._id %>"></a>
+                        <div class="row">
+                            <div class="col-1">
+                                <% if (!post.isUpvoted) { %>
+                                    <form action="/post/upvote/<%= post._id %>" method="post">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm" style="z-index: 2; position: relative;">
+                                            <i class="bi bi-arrow-up"></i>
+                                        </button>
+                                    </form>
+                                <% } else { %>
+                                    <form action="/post/remove/upvote/<%= post._id %>" method="post" style="z-index: 2; position: relative;">
+                                        <button type="submit" class="btn btn-danger btn-sm">
+                                            <i class="bi bi-arrow-up"></i>
+                                        </button>
+                                    </form>
+                                <% } %>
+                                <h5 class="ms-2">
+                                    <%= post.voteSum %>
+                                </h5>
+                                <% if (!post.isDownvoted) { %>
+                                    <form action="/post/downvote/<%= post._id %>" method="post">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm" style="z-index: 2; position: relative;">
+                                            <i class="bi bi-arrow-down"></i>
+                                        </button>
+                                    </form>
+                                <% } else { %>
+                                    <form action="/post/remove/downvote/<%= post._id %>" method="post">
+                                        <button type="submit" class="btn btn-danger btn-sm" style="z-index: 2; position: relative;">
+                                            <i class="bi bi-arrow-down"></i>
+                                        </button>
+                                    </form>
+                                <% } %>
+                            </div>
+                            <div class="col-11">
+                                <p class="text-secondary">Posted by <em><%= post.author %></em> <%= timeAgo(new Date() - post.createdAt) %></p>
+                                <h2><%= post.header %></h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <% }) %>
+    </div>
+</div>
+
+
+<% function timeAgo (time_difference) { %>
+    <%  const secs = Math.floor(time_difference / 1000);%>
+    <%  const mins = Math.floor(secs / 60);%>
+    <%  const hours = Math.floor(mins / 60);%>
+    <%  const days = Math.floor(hours / 24);%>
+    <%  const weeks = Math.floor(days / 7);%>
+    <%  const months = Math.floor(days / 30);%>
+    <%  const years = Math.floor(days / 365);%>
+
+    <%  if (mins === 0) {%>
+        <%      return secs + " sec. ago";%>
+    <%  } else if (hours === 0) {%>
+        <%      return mins + " min. ago";%>
+    <%  } else if (days === 0) {%>
+        <%      return hours + " h. ago";%>
+    <%  } else if (weeks === 0) {%>
+        <%      return days + " d. ago";%>
+    <%  } else if (months === 0) {%>
+        <%      return weeks + " w. ago";%>
+    <%  } else if (years === 0) {%>
+        <%      return months + " mon. ago";%>
+    <%  } else {%>
+        <%      return years + " y. ago"%>
+    <%  } %>
+<% } %>
+
+
+</body>
+
+
+</html>

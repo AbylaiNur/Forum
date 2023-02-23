@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('./partials/head') %>
+    <title>Threads</title>
+</head>
+<body>
+
+<%- include('./partials/nav') %>
+
+
+<div class="container">
+    <h1 class="mb-4 mt-2">
+        Thread
+    </h1>
+
+    <% threads.forEach(thread => { %>
+        <div class="card mb-3" style="z-index: 2; position: relative;">
+            <div class="card-body">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-1">
+                            <% if (user) { %>
+                                <% if (thread.is_joined === false) { %>
+                                    <form action="/threads/join/<%= thread._id %>" method="post">
+                                        <button style="z-index: 2; position: relative;" type="submit"
+                                                class="btn btn-primary btn-sm">Join
+                                        </button>
+                                    </form>
+                                <% } else { %>
+                                    <form action="/threads/leave/<%= thread._id %>" method="post">
+                                        <button style="z-index: 2; position: relative;" type="submit"
+                                                class="btn btn-danger btn-sm">Leave
+                                        </button>
+                                    </form>
+                                <% } %>
+                            <% } else { %>
+                                <a style="z-index: 2; position: relative;" href="/login" class="btn btn-primary btn-sm">Join</a>
+                            <% } %>
+                        </div>
+                        <div class="col-1 text-end">
+                            <%= thread.joins_count %> Members
+                        </div>
+                        <div class="col-2">
+                            <a class="stretched-link" href="/threads/<%= thread._id %>">/<%= thread.name %></a>
+                        </div>
+                        <div class="col-8">
+                            <div><%= thread.description %></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <% }) %>
+
+</div>
+</body>

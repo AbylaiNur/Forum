@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('./partials/head') %>
+    <title>Home</title>
+</head>
+<body>
+<%- include('./partials/nav') %>
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-3">
+            <% const imagePosterUrl = `https://image.tmdb.org/t/p/w500/${movie.poster_path}` %>
+            <% const imageBackdropUrl = `https://image.tmdb.org/t/p/w500/${movie.backdrop_path}` %>
+            <img class="w-100 rounded mb-4" src="<%= imagePosterUrl %>" alt="movie">
+            <div data-bs-toggle="modal" data-bs-target="#trailerModal" style="position: relative;">
+                <button class="btn btn-danger" type="button" style="position: absolute; bottom: 1rem; right:1rem">Trailer</button>
+                <a href="#">
+                    <img class="w-100 rounded" src="<%= `https://img.youtube.com/vi/${movieTrailer.key}/maxresdefault.jpg` %>" alt="trailer">
+                </a>
+            </div>
+        </div>
+        <div class="col-6">
+            <h1 class="mb-4 d-inline me-3"><%= movie.title%></h1>
+            <span class="badge rounded-pill text-bg-warning p-3 fs-5 mb-3"><%= movie.vote_average %></span>
+            <div>
+                <a class="btn btn-secondary btn-lg mb-3 me-2" href="<%= movie.id %>/addWatchLater">Watch later</a>
+                <a class="btn btn-danger btn-lg mb-3 me-2" href="<%= movie.id %>/addFavorite">Favorite</a>
+                <a class="btn btn-primary btn-lg mb-3" href="<%= movie.id %>/addWatched">Watched</a>
+            </div>
+            <h2>Overview</h2>
+            <p class="text-secondary"><%= movie.overview %></p>
+            <h2>About</h2>
+            <div class="row">
+                <div class="col-3 text-secondary mb-4">
+                    Release date
+                </div>
+                <div class="col-9">
+                    <%= movie.release_date %>
+                </div>
+                <div class="col-3 text-secondary mb-4">
+                    Countries
+                </div>
+                <div class="col-9">
+                    <% movie.production_countries.forEach(country => { %>
+                        <%= country.name + '  ' %>
+                    <% }) %>
+                </div>
+                <div class="col-3 text-secondary mb-4">
+                    Genres
+                </div>
+                <div class="col-9">
+                    <% movie.genres.forEach(genre => { %>
+                        <%= genre.name %>
+                    <%})%>
+                </div>
+                <div class="col-3 text-secondary mb-4">
+                    Tagline
+                </div>
+                <div class="col-9">
+                    <%= movie.tagline %>
+                </div>
+                <div class="col-3 text-secondary mb-4">
+                    Runtime
+                </div>
+                <div class="col-9">
+                    <%= Math.floor(movie.runtime / 60) + ":" + Math.round(movie.runtime % 60) %>
+                </div>
+                <div class="col-3 text-secondary mb-4">
+                    Companies
+                </div>
+                <div class="col-9">
+                    <% movie.production_companies.forEach( company => { %>
+                        <%= company.name%>
+                    <% }) %>
+                </div>
+                <div class="col-3 text-secondary mb-4">
+                    Revenue
+                </div>
+                <div class="col-9">
+                    <%= movie.revenue %><span>&#36;</span>
+                </div>
+                <div class="col-3 text-secondary mb-4">
+                    Status
+                </div>
+                <div class="col-9">
+                    <%= movie.status %>
+                </div>
+                <div class="col-3 text-secondary mb-4">
+                    Languages
+                </div>
+                <div class="col-9">
+                    <% movie.spoken_languages.forEach(language => { %>
+                        <%= language.name %>
+                    <% }) %>
+                </div>
+            </div>
+        </div>
+        <div class="col-3">
+        </div>
+    </div>
+</div>
+
+<!-- modal for trailer -->
+<div class="modal fade" id="trailerModal" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle">Trailer</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="ratio ratio-16x9">
+                    <iframe src="https://www.youtube.com/embed/<%= movieTrailer.key %>?autoplay=1" title="YouTube video" allowfullscreen></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- comments-->
+
+
+
+<div class="container mt-20 mb-20">
+    <!-- form for comments-->
+    <div class="container my-5 pt-5 border-top">
+        <form action="/title/comment/<%= movie.id%>" method="post">
+            <div class="form-floating">
+                <textarea class="form-control text-secondary" placeholder="Leave a comment here" id="floatingTextarea" name="comment"></textarea>
+                <label for="floatingTextarea">Leave your comment here</label>
+            </div>
+            <button class="btn btn-primary mt-3" >Comment</button>
+        </form>
+    </div>
+    <!--bunch of comments -->
+    <!-- I like and hate this part so much -Abylai -->
+    <% function find(item) { %>
+        <% for (let i = 0; i < comments.length; i++) {%>
+            <% if (item === comments[i]._id.toString()) { %>
+                <% return comments[i]; %>
+            <% } %>
+        <% } %>
+    <% } %>
+    <!-- Recursion function to print replies. To do that used trees and -id-s for references as nodes -->
+    <% function printReplies(comment) { %>
+        <div class="border-start border-dark ps-4 my-3">
+        <% comment.replies.forEach((reply_id) => { %>
+            <% const comment = find(reply_id.toString()) %>
+                <div class="d-inline fw-bold"><%= comment.username %></div>
+                <div class="d-inline text-secondary "><%= timeAgo(new Date() - comment.createdAt) %></div>
+                <p class="mb-0 text-break"><%= comment.comment_body %></p>
+
+                <button class="btn btn btn-outline-secondary mb-1 border-0 p-0 px-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<%= comment._id.toString()%>" aria-expanded="false">
+                    <i class="bi bi-reply"></i>
+                </button>
+
+
+                <!-- collapse for reply -->
+                <div class="collapse my-2 " id="collapse<%= comment._id.toString()%>">
+                    <div class="card card-body border-primary">
+                        <div id="comment<%=comment._id%>">
+                            <form action="/title/<%=movie.id%>/reply/<%=comment._id%>" method="post">
+                                <div class="form-floating">
+                                    <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea" name="reply"></textarea>
+                                    <label for="floatingTextarea">Add a reply</label>
+                                </div>
+                                <button class="btn btn-primary mt-3" >Reply</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <% printReplies(comment) %>
+        <%}) %>
+        </div>
+    <% } %>
+
+    <% function timeAgo (time_difference) { %>
+    <%  const secs = Math.floor(time_difference / 1000);%>
+    <%  const mins = Math.floor(secs / 60);%>
+    <%  const hours = Math.floor(mins / 60);%>
+    <%  const days = Math.floor(hours / 24);%>
+    <%  const weeks = Math.floor(days / 7);%>
+    <%  const months = Math.floor(days / 30);%>
+    <%  const years = Math.floor(days / 365);%>
+
+    <%  if (mins === 0) {%>
+    <%      return secs + " s. ago";%>
+    <%  } else if (hours === 0) {%>
+    <%      return mins + " m. ago";%>
+    <%  } else if (days === 0) {%>
+    <%      return hours + " h. ago";%>
+    <%  } else if (weeks === 0) {%>
+    <%      return days + " d. ago";%>
+    <%  } else if (months === 0) {%>
+    <%      return weeks + " w. ago";%>
+    <%  } else if (years === 0) {%>
+    <%      return months + " mon. ago";%>
+    <%  } else {%>
+    <%      return years + " y. ago"%>
+    <%  } %>
+    <% } %>
+
+    <% comments.forEach(comment => { %>
+        <% if (comment.level === 0) {%>
+
+            <div class="border-start border-dark ps-4 my-4">
+                <div class="d-inline fw-bold"><%= comment.username %></div>
+                <div class="d-inline text-secondary"><%= timeAgo(new Date() - comment.createdAt) %></div>
+                <p class="mb-0 text-break"><%= comment.comment_body %></p>
+
+                <button class="btn btn btn-outline-secondary mb-1 border-0 p-0 px-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<%= comment._id.toString()%>" aria-expanded="false">
+                    <i class="bi bi-reply"></i>
+                </button>
+
+                <!-- collapse for reply -->
+                <div class="collapse my-2 " id="collapse<%= comment._id.toString()%>">
+                    <div class="card card-body border-primary">
+                        <div id="comment<%=comment._id%>">
+                            <form  action="/title/<%=movie.id%>/reply/<%=comment._id%>" method="post">
+                                <div class="form-floating">
+                                    <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea" name="reply"></textarea>
+                                    <label for="floatingTextarea">Add a reply</label>
+                                </div>
+                                <button class="btn btn-primary mt-3" >Reply</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <% printReplies(comment) %>
+
+
+
+            </div>
+
+
+        <% } %>
+    <% }) %>
+</div>
+
+</body>
+
+</html>
