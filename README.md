@@ -1,5 +1,7 @@
 ### Forum
 
+Create .env file in the root directory and include DB_URL=<your mongoDB Url>
+
 npm i
 
 npm start
